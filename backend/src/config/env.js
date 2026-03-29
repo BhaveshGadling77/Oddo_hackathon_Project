@@ -9,6 +9,7 @@ const requiredEnv = [
 ];
 
 requiredEnv.forEach((key) => {
+    console.log(key)
   if (!process.env[key]) {
     throw new Error(`Missing required environment variable: ${key}`);
   }

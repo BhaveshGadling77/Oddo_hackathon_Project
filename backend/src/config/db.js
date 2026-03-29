@@ -3,16 +3,21 @@ const { db } = require('./env');
 
 const pool = mysql.createPool(db);
 
-// Verify connection on startup
-(async () => {
+/**
+ * Test DB Connection
+ */
+const testConnection = async () => {
   try {
     const conn = await pool.getConnection();
-    console.log('✅  MySQL connected successfully');
+    console.log('✅ MySQL connected successfully');
     conn.release();
   } catch (err) {
-    console.error('❌  MySQL connection failed:', err.message);
+    console.error('❌ MySQL connection failed:', err.message);
     process.exit(1);
   }
-})();
+};
 
-module.exports = pool;
+module.exports = {
+  pool,
+  testConnection
+};
