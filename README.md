@@ -1,213 +1,236 @@
-﻿# Oddo Hackathon 
+# Expense Management System
 
-## Backend
-``` 
-src/
-├── config/
-│   ├── db.js               # MySQL connection pool (mysql2/promise)
-│   ├── passport.js         # Google OAuth strategy
-│   └── env.js              # Validated env vars
-├── controllers/
-│   ├── auth.controller.js
-│   ├── user.controller.js
-│   ├── expense.controller.js
-│   ├── approval.controller.js
-│   └── workflow.controller.js
-├── routes/
-│   ├── auth.routes.js
-│   ├── user.routes.js
-│   ├── expense.routes.js
-│   ├── approval.routes.js
-│   └── workflow.routes.js
-├── services/
-│   ├── auth.service.js
-│   ├── expense.service.js
-│   ├── approval.service.js      # Core engine
-│   ├── ocr.service.js
-│   ├── currency.service.js
-│   └── notification.service.js
-├── models/
-│   ├── user.model.js
-│   ├── expense.model.js
-│   ├── approval.model.js
-│   └── company.model.js
-├── middlewares/
-│   ├── auth.middleware.js        # JWT verify
-│   ├── role.middleware.js        # RBAC guard
-│   ├── upload.middleware.js      # multer
-│   └── error.middleware.js
-└── utils/
-    ├── jwt.util.js
-    ├── response.util.js
-    └── logger.js
-```
+A full-stack expense management application with role-based access control for employees, managers, and admins. Built with React + Vite (frontend) and Express + MongoDB (backend).
 
+---
 
-## Frontend
-```
-components/
-│   ├── ui/              # Button, Input, Badge, Modal
-│   ├── layout/          # Sidebar, Navbar, PageWrapper
-│   ├── expense/         # ExpenseCard, StatusBadge, ReceiptUploader
-│   └── approval/        # ApprovalTimeline, RuleBuilder
-pages/
-│   ├── auth/            # Login.jsx, Signup.jsx
-│   ├── admin/           # Dashboard, Users, WorkflowBuilder, Rules
-│   ├── employee/        # SubmitExpense, ExpenseHistory
-│   └── manager/         # PendingApprovals, TeamExpenses
-services/
-│   ├── api.js           # Axios instance with interceptors
-│   ├── auth.service.js
-│   ├── expense.service.js
-│   └── approval.service.js
-hooks/
-│   ├── useAuth.js
-│   ├── useExpenses.js
-│   └── useApprovals.js
-context/
-│   └── AuthContext.jsx
-utils/
-│   ├── formatCurrency.js
-│   └── roleGuard.js
-```
-## Rest API
-# Auth
-POST   /api/auth/signup          → create company + admin user + set currency
-POST   /api/auth/login           → email/password → JWT
-POST   /api/auth/google          → Google id_token → JWT
-GET    /api/auth/me              → current user profile
+## Features
 
-# Users (admin only for POST/PUT)
-POST   /api/users                → create employee/manager
-GET    /api/users                → list company users
-PUT    /api/users/:id            → update role, manager assignment
+- **Authentication** — JWT-based login and registration
+- **Role-based access** — Admin, Manager, Employee dashboards
+- **Expense submission** — Create, edit, delete expenses with receipt URL
+- **Approval workflow** — Managers approve/reject with comments; approval timeline tracking
+- **Admin controls** — User management, workflow builder, approval rules
+- **Dashboard stats** — Charts by category, totals, and status breakdown
 
-# Expenses
-POST   /api/expenses             → submit (triggers approval engine)
-GET    /api/expenses             → list (filtered by role)
-GET    /api/expenses/:id         → detail + approval timeline
-PUT    /api/expenses/:id         → edit draft only
-
-# Approvals
-GET    /api/approvals/pending    → my pending actions
-POST   /api/approvals/:id/approve
-POST   /api/approvals/:id/reject
-
-# Workflows (admin)
-POST   /api/approval-flows       → create flow with steps + rules
-GET    /api/approval-flows       → list flows
-PUT    /api/approval-flows/:id   → update
-
-# ExpenseFlow — Expense Reimbursement Management System
-
-Part 1 of a production-level React frontend.
+---
 
 ## Tech Stack
 
-| Layer        | Technology                  |
-|--------------|-----------------------------|
-| Framework    | React 18 + Vite 5           |
-| Styling      | Tailwind CSS v3             |
-| Routing      | React Router v6             |
-| HTTP client  | Axios (with interceptors)   |
-| Forms        | React Hook Form             |
-| State        | Context API + useReducer    |
+| Layer     | Technology                              |
+|-----------|-----------------------------------------|
+| Frontend  | React 19, Vite, TypeScript, Tailwind CSS, TanStack Query |
+| Backend   | Express 5, TypeScript, Node.js 18+      |
+| Database  | MongoDB + Mongoose                      |
+| Auth      | JWT (jsonwebtoken) + bcryptjs           |
+
+---
 
 ## Project Structure
 
 ```
-src/
-├── components/
-│   ├── forms/          # GoogleSignInButton, shared form components
-│   ├── guards/         # ProtectedRoute, AdminRoute, ManagerRoute, EmployeeRoute
-│   └── ui/             # Logo, Spinner, icons, LoadingScreen
-├── context/
-│   └── AuthContext.jsx # Auth state + actions (login, signup, googleLogin, logout)
-├── hooks/
-│   └── useCountries.js # Restcountries API hook
-├── layouts/
-│   ├── AuthLayout.jsx       # Shared auth page wrapper
-│   └── DashboardLayout.jsx  # Sidebar + topbar shell
-├── pages/
-│   ├── auth/
-│   │   ├── LoginPage.jsx
-│   │   └── SignupPage.jsx
-│   ├── dashboard/
-│   │   └── DashboardHome.jsx
-│   ├── NotFound.jsx
-│   └── Unauthorized.jsx
-├── services/
-│   ├── api.js          # Axios instance + interceptors
-│   └── authService.js  # Auth API calls
-└── utils/
-    └── validation.js   # RHF rules + password strength
+expense-management/
+├── backend/                        # Express API server
+│   ├── src/
+│   │   ├── config/
+│   │   │   └── db.ts               # MongoDB connection
+│   │   ├── models/
+│   │   │   ├── User.ts             # User schema (admin/manager/employee)
+│   │   │   ├── Expense.ts          # Expense schema
+│   │   │   ├── Approval.ts         # Approval schema
+│   │   │   └── Workflow.ts         # Workflow + rules + steps schema
+│   │   ├── middlewares/
+│   │   │   └── auth.middleware.ts  # JWT authentication + role guards
+│   │   ├── routes/
+│   │   │   ├── index.ts            # Route aggregator
+│   │   │   ├── auth.routes.ts      # POST /login, /register, /logout, GET /me
+│   │   │   ├── user.routes.ts      # CRUD /users (admin only)
+│   │   │   ├── expense.routes.ts   # CRUD /expenses + /stats
+│   │   │   ├── approval.routes.ts  # GET /approvals, POST /:id/approve|reject
+│   │   │   └── workflow.routes.ts  # CRUD /approval-flows
+│   │   ├── seed.ts                 # Database seeder with test accounts
+│   │   ├── app.ts                  # Express app setup (CORS, middleware)
+│   │   └── index.ts                # Server entry point
+│   ├── .env.example                # Environment variable template
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── frontend/                       # React + Vite application
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ui/                 # Shadcn UI components (Button, Input, Badge …)
+│   │   │   ├── layout/             # AppLayout, Sidebar, Navbar
+│   │   │   ├── expense/            # ExpenseCard, StatusBadge
+│   │   │   └── approval/           # ApprovalTimeline
+│   │   ├── context/
+│   │   │   └── AuthContext.tsx     # Auth state + JWT storage
+│   │   ├── lib/
+│   │   │   └── auth.ts             # Token helpers
+│   │   ├── pages/
+│   │   │   ├── auth/               # Login.tsx, Signup.tsx
+│   │   │   ├── admin/              # Dashboard.tsx, Users.tsx, Workflows.tsx, WorkflowBuilder.tsx
+│   │   │   ├── manager/            # PendingApprovals.tsx, TeamExpenses.tsx
+│   │   │   └── employee/           # SubmitExpense.tsx, ExpenseHistory.tsx
+│   │   ├── App.tsx                 # Router + role-based route guards
+│   │   ├── index.css               # Tailwind + theme tokens
+│   │   └── main.tsx
+│   ├── public/
+│   │   └── images/
+│   │       └── auth-bg.png
+│   ├── index.html
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+│
+└── README.md
 ```
+
+---
+
+## Prerequisites
+
+Make sure the following are installed on your machine:
+
+- [Node.js](https://nodejs.org/) v18 or higher
+- [pnpm](https://pnpm.io/) — `npm install -g pnpm`
+- [MongoDB](https://www.mongodb.com/try/download/community) running locally **or** a [MongoDB Atlas](https://www.mongodb.com/atlas) account
+
+---
 
 ## Getting Started
 
+### 1. Extract the zip
+
 ```bash
-# 1. Install dependencies
+unzip expense-management-mongodb.zip -d expense-management
+cd expense-management
+```
+
+---
+
+### 2. Backend Setup
+
+```bash
+cd backend
 npm install
+```
 
-# 2. Copy and edit environment variables
+Create your environment file:
+
+```bash
 cp .env.example .env
+```
 
-# 3. Start development server
+Open `.env` and fill in your values:
+
+```env
+MONGODB_URI=mongodb://localhost:27017/expense_db
+SESSION_SECRET=replace_with_a_long_random_string
+PORT=5000
+CLIENT_URL=http://localhost:5173
+NODE_ENV=development
+```
+
+> **Using MongoDB Atlas?** Replace `MONGODB_URI` with your Atlas connection string:
+> ```
+> MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/expense_db
+> ```
+
+Seed the database with demo data:
+
+```bash
+npm run seed
+```
+
+Start the backend server:
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+The API will be available at `http://localhost:5000`
 
-## Environment Variables
+---
 
-| Variable              | Description                             |
-|-----------------------|-----------------------------------------|
-| `VITE_API_URL`        | Backend base URL (default: localhost:5000/api) |
-| `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID (leave blank for demo mode) |
+### 3. Frontend Setup
 
-## Auth Context API
+Open a new terminal:
 
-```jsx
-const {
-  user, token, role,
-  isAuthenticated, isLoading, error,
-  isAdmin, isManager, isEmployee,
-  login, signup, googleLogin, logout,
-  clearError, updateUser, hasRole,
-} = useAuth()
+```bash
+cd frontend
+pnpm install
+pnpm run dev
 ```
 
-## Role Hierarchy
+The app will be available at `http://localhost:5173`
 
+---
+
+## API Endpoints
+
+| Method | Endpoint                          | Access          | Description                |
+|--------|-----------------------------------|-----------------|----------------------------|
+| POST   | `/api/auth/login`                 | Public          | Login and receive JWT       |
+| POST   | `/api/auth/register`              | Public          | Register a new user         |
+| GET    | `/api/auth/me`                    | Authenticated   | Get current user            |
+| POST   | `/api/auth/logout`                | Authenticated   | Logout                      |
+| GET    | `/api/users`                      | Admin           | List all users              |
+| PUT    | `/api/users/:id`                  | Admin           | Update user                 |
+| DELETE | `/api/users/:id`                  | Admin           | Deactivate user             |
+| GET    | `/api/expenses`                   | Authenticated   | List expenses (role-scoped) |
+| POST   | `/api/expenses`                   | Employee+       | Submit new expense          |
+| GET    | `/api/expenses/stats`             | Authenticated   | Expense statistics          |
+| PUT    | `/api/expenses/:id`               | Owner / Admin   | Update expense              |
+| DELETE | `/api/expenses/:id`               | Owner / Admin   | Delete expense              |
+| GET    | `/api/approvals`                  | Manager / Admin | List pending approvals      |
+| POST   | `/api/approvals/:id/approve`      | Manager / Admin | Approve an expense          |
+| POST   | `/api/approvals/:id/reject`       | Manager / Admin | Reject an expense           |
+| GET    | `/api/approval-flows`             | Authenticated   | List workflows              |
+| POST   | `/api/approval-flows`             | Admin           | Create workflow             |
+| PUT    | `/api/approval-flows/:id`         | Admin           | Update workflow             |
+| DELETE | `/api/approval-flows/:id`         | Admin           | Delete workflow             |
+
+---
+
+## Test Accounts (after seeding)
+
+| Role     | Email                   | Password      |
+|----------|-------------------------|---------------|
+| Admin    | admin@company.com       | admin123      |
+| Manager  | manager@company.com     | manager123    |
+| Employee | employee@company.com    | employee123   |
+| Employee | jane@company.com        | employee123   |
+
+---
+
+## Role Permissions
+
+| Feature                  | Employee | Manager | Admin |
+|--------------------------|----------|---------|-------|
+| Submit expense           | ✅       | ✅      | ✅    |
+| View own expenses        | ✅       | ✅      | ✅    |
+| View team expenses       | ❌       | ✅      | ✅    |
+| Approve / reject         | ❌       | ✅      | ✅    |
+| View all users           | ❌       | ❌      | ✅    |
+| Manage users             | ❌       | ❌      | ✅    |
+| Manage workflows         | ❌       | ❌      | ✅    |
+| View admin dashboard     | ❌       | ❌      | ✅    |
+
+---
+
+## Production Build
+
+**Backend:**
+```bash
+cd backend
+npm run build
+npm start
 ```
-admin    →  full access (all routes)
-manager  →  approvals, reports, team + employee routes
-employee →  expenses, profile
+
+**Frontend:**
+```bash
+cd frontend
+pnpm run build
+# Serve the dist/ folder with any static server e.g. nginx or serve
+npx serve dist
 ```
-
-## Route Guards
-
-```jsx
-<ProtectedRoute />   // Any authenticated user
-<AdminRoute />       // admin only
-<ManagerRoute />     // manager + admin
-<EmployeeRoute />    // any authenticated role
-```
-
-## Countries API
-
-The Signup page fetches countries from:
-```
-https://restcountries.com/v3.1/all?fields=name,currencies,cca2
-```
-A fallback list is shown if the API is unreachable.
-
-## What's Next (Part 2)
-
-- Expense submission form with receipt upload
-- Manager approval workflow
-- Admin user management
-- Reports & analytics with charts
-- Notification system
-- Profile & settings pages
-update
