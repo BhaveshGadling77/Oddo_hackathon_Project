@@ -13,7 +13,7 @@ export function useExpenses(initialParams = {}) {
     setError(null);
     try {
       const data = await expenseAPI.listExpenses(params);
-      setExpenses(data.expenses || data || []);
+      setExpenses(data.expenses || data.rows || (Array.isArray(data) ? data : []) );
     } catch (err) {
       setError(err.message);
     } finally {

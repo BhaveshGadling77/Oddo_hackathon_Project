@@ -5,14 +5,12 @@ const R               = require('../utils/response.util');
 async function getPendingApprovals(req, res, next) {
   try {
     const [requests] = await pool.query(
-      `SELECT ar.*, e.amount, e.currency, e.converted_amount, e.category,
+      `SELECT ar.*, e.amount, e.currency, e.category,
               e.description, e.expense_date, e.receipt_url, e.status AS expense_status,
-              u.name AS submitter_name, u.email AS submitter_email,
-              c.default_currency
+              u.name AS submitter_name, u.email AS submitter_email
        FROM approval_requests ar
        JOIN expenses e   ON e.id  = ar.expense_id
        JOIN users u      ON u.id  = e.user_id
-       JOIN companies c  ON c.id  = e.company_id
        WHERE ar.approver_id = ? AND ar.status = 'pending'
        ORDER BY ar.created_at ASC`,
       [req.user.id]
@@ -23,31 +21,25 @@ async function getPendingApprovals(req, res, next) {
 
 async function approve(req, res, next) {
   try {
-    await approvalService.processDecision(
-      req.params.id, 'approved', req.body.comment, req.user.id
-    );
+    await approvalService.processDecision(req.params.id, 'approved', req.body.comment, req.user.id);
     R.success(res, null, 'Expense approved');
   } catch (err) { next(err); }
 }
 
 async function reject(req, res, next) {
   try {
-    if (!req.body.comment?.trim())
-      return R.badRequest(res, 'A reason is required when rejecting');
-    await approvalService.processDecision(
-      req.params.id, 'rejected', req.body.comment, req.user.id
-    );
+    if (!req.body.comment?.trim()) return R.badRequest(res, 'A reason is required when rejecting');
+    await approvalService.processDecision(req.params.id, 'rejected', req.body.comment, req.user.id);
     R.success(res, null, 'Expense rejected');
   } catch (err) { next(err); }
 }
 
 async function adminOverride(req, res, next) {
   try {
-    const { decision } = req.body;
-    if (!['approved', 'rejected'].includes(decision))
-      return R.badRequest(res, 'decision must be approved or rejected');
-    await approvalService.adminOverride(req.params.expenseId, decision, req.user.id);
-    R.success(res, null, `Expense ${decision} by admin`);
+    const { status, comment } = req.body;
+    if (!['approved','rejected'].includes(status)) return R.badRequest(res, 'status must be approved or rejected');
+    await approvalService.adminOverride(req.params.expenseId, status, req.user.id);
+    R.success(res, null, `Expense ${status} by admin`);
   } catch (err) { next(err); }
 }
 
