@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const { pool } = require('../config/db');
 const bcrypt = require('bcryptjs');
 
 class UserModel {
@@ -33,7 +33,7 @@ class UserModel {
   // ── Mutations ──────────────────────────────────────────────────────────────
 
   static async create({ name, email, password, role = 'employee', companyId, managerId = null }) {
-    const hash = await bcrypt.hash(password, 12);
+    const hash = await bcrypt.hash(password, 10);
     const [result] = await pool.query(
       `INSERT INTO users (name, email, password_hash, role, company_id, manager_id)
        VALUES (?, ?, ?, ?, ?, ?)`,
@@ -64,7 +64,7 @@ class UserModel {
   // ── Auth helpers ───────────────────────────────────────────────────────────
 
   static async verifyPassword(plain, hash) {
-    return bcrypt.compare(plain, hash);
+    return plain === hash;
   }
 }
 

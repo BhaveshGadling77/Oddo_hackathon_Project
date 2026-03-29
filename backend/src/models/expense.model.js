@@ -1,4 +1,4 @@
-const pool = require('../config/db');
+const { pool } = require('../config/db');
 
 class ExpenseModel {
   static async create({ userId, companyId, title, amount, currency, category, notes, receiptUrl }) {

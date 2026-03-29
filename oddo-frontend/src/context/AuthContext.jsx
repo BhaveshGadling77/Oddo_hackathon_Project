@@ -20,16 +20,20 @@ export function AuthProvider({ children }) {
   // POST /api/auth/login
   const login = useCallback(async (email, password) => {
     const data = await authAPI.login({ email, password });
-    if (data.token) localStorage.setItem("token", data.token);
-    setUser(data.user || data);
+    const token = data.token || data.data?.token;
+    const user = data.user || data.data?.user;
+    if (token) localStorage.setItem("token", token);
+    setUser(user);
     return data;
   }, []);
 
   // POST /api/auth/signup
   const signup = useCallback(async (form) => {
     const data = await authAPI.signup(form);
-    if (data.token) localStorage.setItem("token", data.token);
-    setUser(data.user || data);
+    const token = data.token || data.data?.token;
+    const user = data.user || data.data?.user;
+    if (token) localStorage.setItem("token", token);
+    setUser(user);
     return data;
   }, []);
 
