@@ -1,5 +1,5 @@
-const userService = require('../services/user.service');
-const R           = require('../utils/response.util');
+const userService = require('../services/user.service.js');
+const R           = require('../utils/response.util.js');
 const { validationResult } = require('express-validator');
 
 async function createUser(req, res, next) {

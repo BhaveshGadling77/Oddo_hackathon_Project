@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { body } = require('express-validator');
-const ctrl   = require('../controllers/user.controller');
+const ctrl   = require('../controllers/user.controller.js');
 const { authenticate, roleGuard, requireCompany } = require('../middlewares/auth.middleware');
 
 const createRules = [

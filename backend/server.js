@@ -6,16 +6,16 @@ const morgan     = require('morgan');
 const rateLimit  = require('express-rate-limit');
 const path       = require('path');
 
-const { testConnection }  = require('./config/db');
-const passport            = require('./config/passport');
-const logger              = require('./utils/logger');
-const { errorHandler, notFoundHandler } = require('./middlewares/error.middleware');
+const { testConnection }  = require('./src/config/db');
+const passport            = require('./src/config/passport');
+const logger              = require('./src/utils/logger');
+const { errorHandler, notFoundHandler } = require('./src/middlewares/error.middleware');
 
-const authRoutes     = require('./routes/auth.routes');
-const userRoutes     = require('./routes/user.routes');
-const expenseRoutes  = require('./routes/expense.routes');
-const approvalRoutes = require('./routes/approval.routes');
-const workflowRoutes = require('./routes/workflow.routes');
+const authRoutes     = require('./src/routes/auth.routes');
+const userRoutes     = require('./src/routes/user.routes');
+const expenseRoutes  = require('./src/routes/expense.routes');
+const approvalRoutes = require('./src/routes/approval.routes');
+const workflowRoutes = require('./src/routes/workflow.routes');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
