@@ -208,3 +208,4 @@ A fallback list is shown if the API is unreachable.
 - Reports & analytics with charts
 - Notification system
 - Profile & settings pages
+update
