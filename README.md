@@ -1,6 +1,7 @@
 ﻿# Oddo Hackathon 
 
-##Backend
+## Backend
+```
 src/
 ├── config/
 │   ├── db.js               # MySQL connection pool (mysql2/promise)
@@ -39,10 +40,11 @@ src/
     ├── jwt.util.js
     ├── response.util.js
     └── logger.js
+```
 
 
-
-## Fronted
+## Frontend
+```
 components/
 │   ├── ui/              # Button, Input, Badge, Modal
 │   ├── layout/          # Sidebar, Navbar, PageWrapper
@@ -67,7 +69,7 @@ context/
 utils/
 │   ├── formatCurrency.js
 │   └── roleGuard.js
-
+```
 ## Rest API
 # Auth
 POST   /api/auth/signup          → create company + admin user + set currency
