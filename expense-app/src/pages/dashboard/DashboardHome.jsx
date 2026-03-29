@@ -152,7 +152,7 @@ export default function DashboardHome() {
         </h1>
         <p className="text-sm text-[var(--text-muted)] mt-0.5">
           {isAdmin
-            ? 'Here\'s a system-wide overview for today.'
+            ? 'Here's a system-wide overview for today.'
             : isManager
             ? 'You have pending approvals waiting for your review.'
             : 'Track and manage your expense reimbursements.'}
